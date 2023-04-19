@@ -29,7 +29,7 @@ namespace OpenCV
             Mat redhier = new();
             Mat bluehier = new();
             Mat blackhier = new();
-            
+
             MCvScalar Redlower = new MCvScalar(0, 150, 100);
             MCvScalar Bluelower = new MCvScalar(100, 100, 30);
             MCvScalar Blacklower = new MCvScalar(0, 0, 0);
@@ -116,6 +116,10 @@ namespace OpenCV
 
                 //    }
                 //    Console.WriteLine();
+                //if (CvInvoke.WaitKey(1) == 13)
+                //{
+                //    port_output = "";
+                //    Console.WriteLine(port_output);
                 //}
 
 
