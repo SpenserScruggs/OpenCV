@@ -36,7 +36,7 @@ namespace OpenCV
 
             MCvScalar Redupper = new MCvScalar(8, 255, 255);
             MCvScalar Blueupper = new MCvScalar(140, 255, 255);
-            MCvScalar Blackupper = new MCvScalar(180, 100, 50);
+            MCvScalar Blackupper = new MCvScalar(180, 100, 35);
 
 
 
