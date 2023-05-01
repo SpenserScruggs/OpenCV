@@ -8,7 +8,7 @@ using Emgu.CV.ImgHash;
 using Emgu.CV.Structure;
 using Emgu.CV.Util;
 using System.IO.Ports;
-
+using System.Xml.Serialization;
 
 namespace OpenCV
 {
@@ -30,21 +30,24 @@ namespace OpenCV
             Mat bluehier = new();
             Mat blackhier = new();
 
-            MCvScalar Redlower = new MCvScalar(0, 150, 100);
-            MCvScalar Bluelower = new MCvScalar(100, 100, 30);
+            MCvScalar Redlower = new MCvScalar(0, 100, 100);
+            MCvScalar Bluelower = new MCvScalar(100, 110, 65);
             MCvScalar Blacklower = new MCvScalar(0, 0, 0);
 
             MCvScalar Redupper = new MCvScalar(8, 255, 255);
-            MCvScalar Blueupper = new MCvScalar(140, 255, 255);
-            MCvScalar Blackupper = new MCvScalar(180, 100, 35);
+            MCvScalar Blueupper = new MCvScalar(130, 255, 255);
+            MCvScalar Blackupper = new MCvScalar(180, 150, 90);
 
-
+            int xrange = 190;
+            int yrange = 125;
+            
+            int xmin = 0, xmax = 0, ymin = 0, ymax = 0;
 
             while (true)
             {
                 vc.Read(frame);
                 
-                CvInvoke.GaussianBlur(frame, frameBlur, new System.Drawing.Size(5, 5), 10.0);
+                CvInvoke.GaussianBlur(frame, frameBlur, new System.Drawing.Size(9, 9), 20.0);
                 CvInvoke.CvtColor(frameBlur, hsv, Emgu.CV.CvEnum.ColorConversion.Bgr2Hsv);
 
                 CvInvoke.InRange(hsv, new ScalarArray(Bluelower), new ScalarArray(Blueupper), bluemask);
@@ -72,10 +75,31 @@ namespace OpenCV
 
                 int[] xblue = new int[contourBlue.Size];
                 int[] xred = new int[contourRed.Size];
+                int[] xblack = new int[contourBlack.Size];
 
                 int[] yblue = new int[contourBlue.Size];
                 int[] yred = new int[contourRed.Size];
+                int[] yblack = new int[contourBlack.Size];
 
+                
+
+                for (int i = 0; i < contourBlack.Size; i++)
+                {
+                    try
+                    {
+                        Rectangle boundingBlack = CvInvoke.BoundingRectangle(contourBlack[i]);
+                        xblack[i] = boundingBlack.X;
+                        yblack[i] = boundingBlack.Y;
+
+                        xmin = xblack.Min();
+                        xmax = xblack.Max();
+
+                        ymin = yblack.Min();
+                        ymax = yblack.Max();
+
+                    } catch { }
+                }               
+                
                 for (int i = 0; i < contourBlue.Size; i++)
                 {
                     try
@@ -84,15 +108,30 @@ namespace OpenCV
                         xblue[i] = boundingBlue.X;
                         yblue[i] = boundingBlue.Y;
 
-                        Rectangle boundingRed = CvInvoke.BoundingRectangle(contourRed[i]);
-                        xred[i] = boundingRed.X;
-                        yred[i] = boundingRed.Y;
-
-                        // Write the XY screen positions of each contour's bounding rectangle to the console
+                        //Console.WriteLine(xblue[i]);
 
                     } catch { }
 
                 }
+
+                for (int i = 0; i < contourRed.Size; i++)
+                {
+                    try
+                    {
+                        Rectangle boundingRed = CvInvoke.BoundingRectangle(contourRed[i]);
+                        xred[i] = boundingRed.X;
+                        yred[i] = boundingRed.Y;
+                    }
+                    catch { }
+                }
+
+                try
+                {
+                    //Console.WriteLine(xblue[0] + " " + xmin + " " + xmax + " " + xrange);
+                    Console.WriteLine(xrange - ((float)xblue[0] - (float)xmin) / ((float)xmax - (float)xmin) * xrange);
+                } catch { }
+
+
 
                 //if (xblue.Length > 0)
                 //{
@@ -101,7 +140,7 @@ namespace OpenCV
                 //    for (int i = 0; i < contourBlue.Size; i++)
                 //    {
                 //        Console.Write(" - X: " + xblue[i] + ", Y: " + yblue[i]);
-                        
+
                 //    }
                 //    Console.WriteLine();
                 //}
@@ -116,6 +155,9 @@ namespace OpenCV
 
                 //    }
                 //    Console.WriteLine();
+                //}
+
+
                 //if (CvInvoke.WaitKey(1) == 13)
                 //{
                 //    port_output = "";
