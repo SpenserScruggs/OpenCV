@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Drawing;
 using System.Globalization;
 using Emgu.CV;
@@ -31,7 +32,7 @@ namespace OpenCV
             Mat blackhier = new();
 
             MCvScalar Redlower = new MCvScalar(0, 100, 100);
-            MCvScalar Bluelower = new MCvScalar(100, 110, 65);
+            MCvScalar Bluelower = new MCvScalar(100, 100, 60);
             MCvScalar Blacklower = new MCvScalar(0, 0, 0);
 
             MCvScalar Redupper = new MCvScalar(8, 255, 255);
@@ -40,8 +41,14 @@ namespace OpenCV
 
             int xrange = 190;
             int yrange = 125;
+            int ystart = 80;
             
             int xmin = 0, xmax = 0, ymin = 0, ymax = 0;
+
+            int redXpos = 0, redYpos = 0;
+            int blueXpos = 0, blueYpos  = 0;
+
+            int loading = 0;
 
             while (true)
             {
@@ -128,7 +135,21 @@ namespace OpenCV
                 try
                 {
                     //Console.WriteLine(xblue[0] + " " + xmin + " " + xmax + " " + xrange);
-                    Console.WriteLine(xrange - ((float)xblue[0] - (float)xmin) / ((float)xmax - (float)xmin) * xrange);
+                    blueXpos = (blueXpos + (int)(xrange - ((float)xblue[0] - (float)xmin) / ((float)xmax - (float)xmin) * xrange - 8)) / 2;
+                    blueYpos = (blueYpos + (int)(ystart + ((float)yblue[0] - (float)ymin) / ((float)ymax - (float)xmin) * yrange + 8)) / 2;
+
+                    redXpos = (redXpos + (int)(xrange - ((float)xred[0] - (float)xmin) / ((float)xmax - (float)xmin) * xrange - 8)) / 2;
+                    redYpos = (redYpos + (int)(ystart + ((float)yred[0] - (float)ymin) / ((float)ymax - (float)xmin) * yrange + 8)) / 2;
+
+                    Console.Write(blueXpos);
+                    Console.Write("    ");
+                    Console.Write(blueYpos);
+                    Console.Write("    ");
+                    Console.Write(redXpos);
+                    Console.Write("    ");
+                    Console.WriteLine(redYpos);
+                    loading += 1;
+
                 } catch { }
 
 
@@ -163,7 +184,10 @@ namespace OpenCV
                 //    port_output = "";
                 //    Console.WriteLine(port_output);
                 //}
-
+                if(loading > 100)
+                {
+                    break;
+                }
 
                 if (CvInvoke.WaitKey(1) == 27)
                 {
@@ -171,7 +195,44 @@ namespace OpenCV
                 }
 
             }
+            string Size(int x)
+            {
+                string output = x.ToString();
+                if (output.Length == 1)
+                {
+                    output = "00" + output;
+                }
+                else if (output.Length == 2)
+                {
+                    output = "0" + output;
+                }
+                return output;
+            }
+
+            Console.Write("use current value? (y/n): ");
+            string awnser = Console.ReadLine();
+            if (awnser != null)
+            {
+                if (awnser == "y" || awnser == "Y")
+                {
+                    SerialPort port = new SerialPort("COM4", 9600);
+                    port.Parity = Parity.None;
+                    port.DataBits = 8;
+                    port.StopBits = StopBits.One;
+                    try
+                    {
+                        Console.WriteLine(Size(blueYpos) + Size(blueXpos) + Size(redYpos) + Size(redXpos));                        
+                        port.Open();
+                        Thread.Sleep(1000);
+                        port.WriteLine(Size(blueYpos) + Size(blueXpos) + Size(redYpos) + Size(redXpos));
+                        Thread.Sleep(1000);
+                        port.Close();
+                    } catch { }
+
+                }
+            }
 
         }
+
     }
 }
