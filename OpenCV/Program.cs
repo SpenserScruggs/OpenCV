@@ -152,38 +152,6 @@ namespace OpenCV
 
                 } catch { }
 
-
-
-                //if (xblue.Length > 0)
-                //{
-                //    Console.Write("Blue Contour " + contourBlue.Size + " ");
-
-                //    for (int i = 0; i < contourBlue.Size; i++)
-                //    {
-                //        Console.Write(" - X: " + xblue[i] + ", Y: " + yblue[i]);
-
-                //    }
-                //    Console.WriteLine();
-                //}
-
-                //if (xred.Length > 0)
-                //{
-                //    Console.Write("Red Contour " + contourRed.Size + " ");
-
-                //    for (int i = 0; i < contourRed.Size; i++)
-                //    {
-                //        Console.Write(" - X: " + xred[i] + ", Y: " + yred[i]);
-
-                //    }
-                //    Console.WriteLine();
-                //}
-
-
-                //if (CvInvoke.WaitKey(1) == 13)
-                //{
-                //    port_output = "";
-                //    Console.WriteLine(port_output);
-                //}
                 if(loading > 100)
                 {
                     break;
